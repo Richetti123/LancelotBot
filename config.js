@@ -410,7 +410,7 @@ else return emotttt[results[0][0]];
 
 // IDs de canales
 global.ch = {
-ch1: '120363400536272752@newsletter',
+ch1: '120363420689686082@newsletter',
 ch2: '120363400536272752@newsletter',
 ch3: '120363400536272752@newsletter',
 ch4: '120363400536272752@newsletter',
