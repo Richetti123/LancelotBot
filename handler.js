@@ -1092,7 +1092,7 @@ antiCall: true,
 antiSpam: true,
 modoia: false, 
 anticommand: false, 
-prefix: opts['prefix'] || '*/i!#$%+£¢€¥^°=¶∆×÷π√✓©®&.\\-.@',
+prefix: opts['prefix'] || '*/i!#$%+£¢€¥^°=¶∆×÷π√✓©®&.\\-.@Aa',
 jadibotmd: true,
 }} catch (e) {
 console.error(e)
@@ -1100,7 +1100,7 @@ console.error(e)
 
 var settings = global.db.data.settings[this.user.jid];
 let prefix;
-const defaultPrefix = '*/i!#$%+£¢€¥^°=¶∆×÷π√✓©®&.\\-.@'; // Valor por defecto
+const defaultPrefix = '*/i!#$%+£¢€¥^°=¶∆×÷π√✓©®&.\\-.@Aa'; // Valor por defecto
 if (settings.prefix) {
 if (settings.prefix.includes(',')) {
 const prefixes = settings.prefix.split(',').map(p => p.trim());
@@ -1153,11 +1153,23 @@ const groupMetadata = (m.isGroup ? ((conn.chats[m.chat] || {}).metadata || await
 const participants = (m.isGroup ? groupMetadata.participants : []) || []
 let numBot = (conn.user.lid || '').replace(/:.*/, '') || false
 const detectwhat2 = m.sender.includes('@lid') ? `${numBot}@lid` : conn.user.jid
-const user = (m.isGroup ? participants.find(u => conn.decodeJid(u.id) === m.sender) : {}) || {}
-const bot = (m.isGroup ? participants.find(u => conn.decodeJid(u.id) == detectwhat2) : {}) || {}
-const isRAdmin = user?.admin == 'superadmin' || false
-const isAdmin = isRAdmin || user?.admin == 'admin' || false //user admins? 
-const isBotAdmin = bot?.admin || false //Detecta sin el bot es admin
+
+// Normaliza el JID del remitente para una búsqueda precisa
+const senderNormalized = conn.decodeJid(m.sender);
+
+// Normaliza el JID del bot para la comparación
+const botJidNormalized = conn.decodeJid(conn.user.jid);
+
+// Encuentra el objeto del usuario comparando el JID normalizado con el campo 'jid' del participante
+const user = (m.isGroup ? participants.find(u => u.jid === senderNormalized) : {}) || {}
+
+// Encuentra el objeto del bot comparando el JID normalizado con el campo 'jid' del participante
+const bot = (m.isGroup ? participants.find(u => u.jid === botJidNormalized) : {}) || {}
+
+const isRAdmin = user?.admin === 'superadmin' || false
+const isAdmin = isRAdmin || user?.admin === 'admin' || false
+const isBotAdmin = bot?.admin === 'superadmin' || bot?.admin === 'admin' || false
+
 m.isWABusiness = global.conn.authState?.creds?.platform === 'smba' || global.conn.authState?.creds?.platform === 'smbi'
 m.isChannel = m.chat.includes('@newsletter') || m.sender.includes('@newsletter')
 	
@@ -1189,7 +1201,7 @@ if (plugin.tags && plugin.tags.includes('admin')) {
 // global.dfail('restrict', m, this)
 continue
 }
-const str2Regex = str => str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&');
+const str2Regex = str => str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&Aa');
             let _prefix = plugin.customPrefix ? plugin.customPrefix : this.prefix ? this.prefix : prefix; // Usamos prefix local
             let match = (_prefix instanceof RegExp ?
                 [[_prefix.exec(m.text), _prefix]] :
